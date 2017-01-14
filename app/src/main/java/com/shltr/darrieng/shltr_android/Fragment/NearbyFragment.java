@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +23,23 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
+import com.google.gson.Gson;
+import com.shltr.darrieng.shltr_android.Model.UserRetrievalModel;
+import com.shltr.darrieng.shltr_android.NearbyPersonAdapter;
 import com.shltr.darrieng.shltr_android.Pojo.DeviceMessage;
+import com.shltr.darrieng.shltr_android.Pojo.UserPojo;
 import com.shltr.darrieng.shltr_android.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.shltr.darrieng.shltr_android.Fragment.FlareFragment.ARG_PAGE;
 
@@ -29,13 +47,20 @@ import static com.shltr.darrieng.shltr_android.Fragment.FlareFragment.ARG_PAGE;
  * A simple {@link Fragment} subclass.
  */
 public class NearbyFragment extends Fragment
-    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    implements Callback<UserPojo>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     SharedPreferences preferences;
 
     MessageListener messageListener;
 
     GoogleApiClient googleApiClient;
+
+    List<UserPojo> userList;
+
+    NearbyPersonAdapter personAdapter;
+
+    @BindView(R.id.person_list)
+    RecyclerView personList;
 
     public NearbyFragment() {
         // Required empty public constructor
@@ -52,6 +77,9 @@ public class NearbyFragment extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
+        userList = new ArrayList<>();
+        personAdapter = new NearbyPersonAdapter(getContext(), userList);
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Nearby.MESSAGES_API)
@@ -68,13 +96,30 @@ public class NearbyFragment extends Fragment
             @Override
             public void onFound(Message message) {
                 super.onFound(message);
-                Toast.makeText(
-                    getActivity(),
-                    DeviceMessage.fromNearbyMessage(message).getMessageBody(),
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "found message", Toast.LENGTH_SHORT).show();
+                startNetworking(message);
             }
         };
 
+        personList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        personList.setAdapter(personAdapter);
+    }
+
+    public void startNetworking(Message message) {
+        Gson gson = new Gson();
+        // make call to API with email: network to pull down Name and profile
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(UserRetrievalModel.ENDPOINT)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
+
+        UserRetrievalModel uModel = retrofit.create(UserRetrievalModel.class);
+
+        Call<UserPojo> call = uModel.retrieveId("Bearer " +
+            preferences.getString(getString(R.string.token), null),
+            DeviceMessage.fromNearbyMessage(message).getMessageBody());
+
+        call.enqueue(this);
     }
 
     public static NearbyFragment newInstance(int page) {
@@ -98,7 +143,6 @@ public class NearbyFragment extends Fragment
 
 
         Nearby.Messages.subscribe(googleApiClient, messageListener, options);
-        Toast.makeText(getActivity(), preferences.getString(getString(R.string.email), null), Toast.LENGTH_SHORT).show();
         Message message = DeviceMessage.newNearbyMessage(preferences.getString(getString(R.string.email), null));
         Nearby.Messages.publish(googleApiClient, message);
     }
@@ -110,6 +154,24 @@ public class NearbyFragment extends Fragment
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onResponse(Call<UserPojo> call, Response<UserPojo> response) {
+        if (response.isSuccessful()) {
+            personAdapter.addUser(
+                new UserPojo(response.body().getPicture(), response.body().getName()));
+        } else {
+            Toast.makeText(getActivity(), "Less cool partay", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<UserPojo> call, Throwable t) {
+        Toast.makeText(getActivity(), "You failed", Toast.LENGTH_SHORT).show();
+        String stackTrace = Log.getStackTraceString(t);
+        Log.wtf("DGL", stackTrace);
 
     }
 }

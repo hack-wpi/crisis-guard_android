@@ -2,15 +2,10 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:orientation="vertical"
               tools:context="com.shltr.darrieng.shltr_android.Fragment.NearbyFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Partay"/>
-
-    <android.support.v7.widget.RecyclerView android:id="@+id/person_view"
+    <android.support.v7.widget.RecyclerView android:id="@+id/person_list"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 

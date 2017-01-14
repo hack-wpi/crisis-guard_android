@@ -102,9 +102,6 @@ public class FlareFragment extends Fragment
 
             Call<BaseResponse> call;
 
-            Toast.makeText(getActivity(), preferences.getInt(
-                getString(R.string.id), -1) + "", Toast.LENGTH_SHORT).show();
-
             call = fm.createUser("Bearer " + preferences.getString(getString(R.string.token), null),
                 new FlarePojo(location.getLongitude(),
                     location.getLatitude(),
