@@ -8,11 +8,11 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PwModel {
-    String ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
+    String LOGIN_ENDPOINT = "http://hack.symerit.com/oauth/";
 
-    @POST("users/new")
+    @POST("token")
     Call<UserToken> createUser(@Body PasswordPojo user);
 
-    @POST("users/new")
+    @POST("token")
     Call<UserToken> loginUser(@Body PasswordPojo user);
 }

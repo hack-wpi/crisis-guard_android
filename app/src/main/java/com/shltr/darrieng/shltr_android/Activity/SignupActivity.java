@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -31,6 +32,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static android.view.View.GONE;
 
 public class SignupActivity extends AppCompatActivity implements Callback<UserToken> {
+
+    @BindView(R.id.debug_button)
+    TextView debugButton;
 
     @BindView(R.id.signup_button)
     Button signupButton;
@@ -74,9 +78,7 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
         goButton.setOnClickListener(v -> {
             if (validateInput()) {
                 // send to server, partay
-                // TODO: enable when server is enabled
-//                startNetworking();
-                startActivity(new Intent(this, RescueeActivity.class));
+                startNetworking();
             } else {
                 // no-op
             }
@@ -144,10 +146,12 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
     @Override
     public void onResponse(Call<UserToken> call, Response<UserToken> response) {
         if (response.isSuccessful()) {
-            // TODO: Change when networking is fresh af
-            passData(response.body().getUserToken());
+            debugButton.setText(response.raw().body().toString());
+            passData(response.body().getAccess_token());
+            startActivity(new Intent(this, RescueeActivity.class));
         } else {
             Toast.makeText(this, "Failed to login/register", Toast.LENGTH_SHORT).show();
+            debugButton.setText(response.code() + " " + response.raw().body().toString());
         }
     }
 
@@ -159,7 +163,7 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
     public void startNetworking() {
         Gson gson = new GsonBuilder().create();
         Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(PwModel.ENDPOINT)
+            .baseUrl(PwModel.LOGIN_ENDPOINT)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
 

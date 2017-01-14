@@ -80,7 +80,8 @@
                     android:hint="@string/email"
                     android:drawableStart="@drawable/ic_email_white_48px"
                     android:drawablePadding="16dp"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                android:text="joshuahassler24@gmail.com"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -98,7 +99,8 @@
                     android:inputType="textPassword"
                     android:drawableStart="@drawable/ic_pw"
                     android:drawablePadding="16dp"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                android:text="yourmom"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -113,7 +115,10 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/debug_button"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
+    </LinearLayout>
 
 </ScrollView>

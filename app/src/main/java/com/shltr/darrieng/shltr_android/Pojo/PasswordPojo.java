@@ -6,7 +6,7 @@ public class PasswordPojo {
     String client_secret = "p7lrAtXIa15549Qq5a8gGNoOzuVwYRQfOYTcMWyh";
     String username;
     String password;
-    String scope = "";
+    String scope = "*";
 
     public PasswordPojo(
         String username,
