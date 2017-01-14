@@ -1,7 +1,5 @@
 package com.shltr.darrieng.shltr_android.Pojo;
 
-import android.os.Build;
-
 import com.google.android.gms.nearby.messages.Message;
 import com.google.gson.Gson;
 
@@ -16,8 +14,7 @@ import java.nio.charset.Charset;
 public class DeviceMessage {
     private static final Gson gson = new Gson();
 
-    private final String mUUID;
-    private final String mMessageBody;
+    private final String email;
 
     /**
      * Builds a new {@link Message} object using a unique identifier.
@@ -38,12 +35,11 @@ public class DeviceMessage {
             DeviceMessage.class);
     }
 
-    private DeviceMessage(String uuid) {
-        mUUID = uuid;
-        mMessageBody = Build.MODEL;
+    private DeviceMessage(String email) {
+        this.email = email;
     }
 
     public String getMessageBody() {
-        return mMessageBody;
+        return email;
     }
 }

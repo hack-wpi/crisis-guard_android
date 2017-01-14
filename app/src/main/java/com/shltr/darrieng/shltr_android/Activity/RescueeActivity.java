@@ -34,8 +34,6 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
 
         preferences = getSharedPreferences(getString(R.string.base), MODE_PRIVATE);
 
-//        Toast.makeText(this, userEmail, Toast.LENGTH_SHORT).show();
-
         if (getIntent().getExtras() != null) {
             userEmail = getIntent().getExtras().getString(getString(R.string.email));
             Gson gson = new GsonBuilder().create();
@@ -48,7 +46,9 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
 
             IdModel idModel = retrofit.create(IdModel.class);
 
-            call = idModel.retrieveId("Bearer " + preferences.getString(getString(R.string.token), null), userEmail);
+            call = idModel.retrieveId(
+                "Bearer " + preferences.getString(getString(R.string.token), null), userEmail);
+
             call.enqueue(this);
         }
 
@@ -85,7 +85,6 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
     @Override
     public void onResponse(Call<UserId> call, Response<UserId> response) {
         if (response.isSuccessful()) {
-            Toast.makeText(this, response.body().getId() + "", Toast.LENGTH_SHORT).show();
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt(getString(R.string.id), response.body().getId());
             editor.apply();

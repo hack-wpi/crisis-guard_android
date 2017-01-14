@@ -1,6 +1,8 @@
 package com.shltr.darrieng.shltr_android.Fragment;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +30,8 @@ import static com.shltr.darrieng.shltr_android.Fragment.FlareFragment.ARG_PAGE;
  */
 public class NearbyFragment extends Fragment
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    SharedPreferences preferences;
 
     MessageListener messageListener;
 
@@ -57,12 +61,17 @@ public class NearbyFragment extends Fragment
         }
 
         googleApiClient.connect();
+        preferences = getActivity().getSharedPreferences(
+            getString(R.string.base), Context.MODE_PRIVATE);
 
         messageListener = new MessageListener() {
             @Override
             public void onFound(Message message) {
                 super.onFound(message);
-                Toast.makeText(getActivity(), DeviceMessage.fromNearbyMessage(message).getMessageBody(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                    getActivity(),
+                    DeviceMessage.fromNearbyMessage(message).getMessageBody(),
+                    Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -89,7 +98,8 @@ public class NearbyFragment extends Fragment
 
 
         Nearby.Messages.subscribe(googleApiClient, messageListener, options);
-        Message message = DeviceMessage.newNearbyMessage("Hello wor;d");
+        Toast.makeText(getActivity(), preferences.getString(getString(R.string.email), null), Toast.LENGTH_SHORT).show();
+        Message message = DeviceMessage.newNearbyMessage(preferences.getString(getString(R.string.email), null));
         Nearby.Messages.publish(googleApiClient, message);
     }
 

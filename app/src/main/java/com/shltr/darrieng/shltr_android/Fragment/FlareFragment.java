@@ -198,15 +198,9 @@ public class FlareFragment extends Fragment
     @Override
     public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
         if (response.isSuccessful()) {
-            Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+            // flare fired: partay
         } else {
-            try {
-                Toast.makeText(getActivity(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(getActivity(), "lol", Toast.LENGTH_SHORT).show();
-            }
-//            Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
-//            Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+            // flare failed: cry
         }
     }
 

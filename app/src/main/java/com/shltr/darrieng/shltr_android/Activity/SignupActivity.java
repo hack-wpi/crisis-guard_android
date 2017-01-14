@@ -147,6 +147,8 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
             passData(response.body().getAccess_token());
             Intent intent = new Intent(this, RescueeActivity.class);
             intent.putExtra(getString(email), enterInputView.getText().toString());
+            editor.putString(getString(R.string.email), enterInputView.getText().toString());
+            editor.apply();
             startActivity(intent);
         } else {
             Toast.makeText(this, "Failed to login/register", Toast.LENGTH_SHORT).show();
