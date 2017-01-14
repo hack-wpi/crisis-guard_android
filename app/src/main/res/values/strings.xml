@@ -9,7 +9,10 @@
     <!-- data strings -->
     <string name="base">base</string>
     <string name="token">token</string>
+    <string name="id">id</string>
 
     <string name="flare">Fire a flare</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="api_key">AIzaSyAor8CjSJCWnSUhwXn9VcGFe1dIeaI0Wd0</string>
 </resources>

@@ -29,6 +29,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.view.View.GONE;
+import static com.shltr.darrieng.shltr_android.R.string.email;
 
 public class SignupActivity extends AppCompatActivity implements Callback<UserToken> {
 
@@ -121,7 +122,8 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
      */
     private void deterministicSkip() {
         if (preferences.contains(getString(R.string.token))) {
-            startActivity(new Intent(this, RescueeActivity.class));
+            Intent intent = new Intent(this, RescueeActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -143,7 +145,9 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
     public void onResponse(Call<UserToken> call, Response<UserToken> response) {
         if (response.isSuccessful()) {
             passData(response.body().getAccess_token());
-            startActivity(new Intent(this, RescueeActivity.class));
+            Intent intent = new Intent(this, RescueeActivity.class);
+            intent.putExtra(getString(email), enterInputView.getText().toString());
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Failed to login/register", Toast.LENGTH_SHORT).show();
         }

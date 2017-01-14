@@ -1,6 +1,6 @@
 package com.shltr.darrieng.shltr_android.Pojo;
 
-public class UserToken {
+public class UserToken extends BaseResponse {
     String access_token;
 
     String token_type;

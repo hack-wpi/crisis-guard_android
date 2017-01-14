@@ -1,5 +1,6 @@
 package com.shltr.darrieng.shltr_android.Model;
 
+import com.shltr.darrieng.shltr_android.Pojo.BaseResponse;
 import com.shltr.darrieng.shltr_android.Pojo.PasswordPojo;
 import com.shltr.darrieng.shltr_android.Pojo.UserToken;
 
@@ -11,7 +12,7 @@ public interface PwModel {
     String LOGIN_ENDPOINT = "http://hack.symerit.com/oauth/";
 
     @POST("token")
-    Call<UserToken> createUser(@Body PasswordPojo user);
+    Call<BaseResponse> createUser(@Body PasswordPojo user);
 
     @POST("token")
     Call<UserToken> loginUser(@Body PasswordPojo user);

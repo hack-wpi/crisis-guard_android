@@ -3,6 +3,7 @@ package com.shltr.darrieng.shltr_android.Fragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,16 +20,26 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.shltr.darrieng.shltr_android.Model.FlareModel;
+import com.shltr.darrieng.shltr_android.Pojo.BaseResponse;
+import com.shltr.darrieng.shltr_android.Pojo.FlarePojo;
 import com.shltr.darrieng.shltr_android.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FlareFragment extends Fragment
-    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Callback<BaseResponse> {
 
     public static final String ARG_PAGE = "ARG_PAGE";
 
@@ -36,6 +47,8 @@ public class FlareFragment extends Fragment
      * Provides the entry point to Google Play services.
      */
     protected GoogleApiClient googleApiClient;
+
+    private SharedPreferences preferences;
 
     private static final int REQUEST_FINE_LOCATION = 1;
 
@@ -64,19 +77,41 @@ public class FlareFragment extends Fragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        preferences = getActivity().getSharedPreferences(getString(R.string.base), Context.MODE_PRIVATE);
 
-        googleApiClient = new GoogleApiClient.Builder(getActivity())
-            .addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .addApi(LocationServices.API)
-            .build();
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        }
 
         googleApiClient.connect();
 
         flareButton.setEnabled(false);
 
         flareButton.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Firing a flare", Toast.LENGTH_SHORT).show();
+            Gson gson = new GsonBuilder().create();
+            Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(FlareModel.ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+            FlareModel fm = retrofit.create(FlareModel.class);
+
+            Call<BaseResponse> call;
+
+            Toast.makeText(getActivity(), preferences.getInt(
+                getString(R.string.id), -1) + "", Toast.LENGTH_SHORT).show();
+
+            call = fm.createUser("Bearer " + preferences.getString(getString(R.string.token), null),
+                new FlarePojo(location.getLongitude(),
+                    location.getLatitude(),
+                    preferences.getInt(
+                        getString(R.string.id), -1)));
+
+            call.enqueue(this);
         });
     }
 
@@ -122,9 +157,14 @@ public class FlareFragment extends Fragment
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+            getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(getActivity(),
+            Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
             requestFineLocationPermission();
-            return;
         } else {
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             flareButton.setEnabled(true);
@@ -153,5 +193,25 @@ public class FlareFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
+        if (response.isSuccessful()) {
+            Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+        } else {
+            try {
+                Toast.makeText(getActivity(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), "lol", Toast.LENGTH_SHORT).show();
+            }
+//            Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<BaseResponse> call, Throwable t) {
+
     }
 }
