@@ -22,4 +22,6 @@
     <string name="last_fired_flare">Last fired flare at %1$s</string>
 
     <string name="searching_nearby">Searching for other nearby users</string>
+
+    <string name="unable">Unable to determine info from picture</string>
 </resources>
