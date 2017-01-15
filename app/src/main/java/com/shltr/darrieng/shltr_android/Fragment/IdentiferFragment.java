@@ -173,6 +173,10 @@ public class IdentiferFragment extends Fragment implements Callback<CompleteIden
             public void onResponse(JSONArray response) {
                 try {
                     String jsonsucks = response.toString();
+                    Log.wtf("DGL", jsonsucks);
+                    if (jsonsucks.contains("cannot create") || jsonsucks.contains("Traceback")) {
+                        throw new RuntimeException("useless");
+                    }
                     String glob = "";
                     String goodGlob = "Similar user:\nName: ";
                     glob += jsonsucks.substring(jsonsucks.indexOf("name") + 10);

@@ -18,7 +18,7 @@
 
     <string name="api_key">AIzaSyAor8CjSJCWnSUhwXn9VcGFe1dIeaI0Wd0</string>
 
-    <string name="never_fired">Flare never fired</string>
+    <string name="never_fired">No flares fired</string>
     <string name="last_fired_flare">Last fired flare at %1$s</string>
 
     <string name="searching_nearby">Searching for other nearby users</string>
