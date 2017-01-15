@@ -171,14 +171,18 @@ public class IdentiferFragment extends Fragment implements Callback<CompleteIden
         JsonArrayRequest getRequest = new JsonArrayRequest(Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.wtf("DGL", response.toString());
-                String jsonsucks = response.toString();
-                String glob = "";
-                String goodGlob = "Similar user:\nName: ";
-                glob += jsonsucks.substring(jsonsucks.indexOf("name") + 10);
-                glob = glob.substring(0, glob.indexOf("\\"));
-                String bettterGlob = "Similar users\n" +"Name: " + glob;
-                agglomerateTextView.setText(bettterGlob);
+                try {
+                    String jsonsucks = response.toString();
+                    String glob = "";
+                    String goodGlob = "Similar user:\nName: ";
+                    glob += jsonsucks.substring(jsonsucks.indexOf("name") + 10);
+                    glob = glob.substring(0, glob.indexOf("\\"));
+                    String bettterGlob = "Similar users\n" +"Name: " + glob;
+                    agglomerateTextView.setText(bettterGlob);
+                } catch (Exception e) {
+                    agglomerateTextView.setText("Unable to determine similar users in our database.");
+                }
+
 
             }
         }, error -> Log.wtf("DGLDG", error.getCause().toString()));
