@@ -4,12 +4,12 @@ package com.shltr.darrieng.shltr_android.Fragment;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PagerAdapterFragment extends FragmentPagerAdapter {
+public class PagerAdapterFragment extends FragmentStatePagerAdapter {
 
     private String tabTitles[] = new String[] { "Person Identifier" , "Flare", "Nearby"};
 

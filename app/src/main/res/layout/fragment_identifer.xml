@@ -4,9 +4,13 @@
              android:layout_height="match_parent"
              tools:context="com.shltr.darrieng.shltr_android.Fragment.IdentiferFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Where you at? That ain't Falco"/>
+    <ImageButton
+        android:id="@+id/fire_image_button"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:src="@drawable/ic_camera_alt_black_48px"
+    android:layout_gravity="center"/>
+
+    <ImageView android:id="@+id/ivPreview"
+               android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
 </FrameLayout>

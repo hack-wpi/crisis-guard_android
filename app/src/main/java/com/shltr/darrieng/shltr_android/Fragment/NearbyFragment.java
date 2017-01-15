@@ -66,6 +66,11 @@ public class NearbyFragment extends Fragment
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -141,7 +146,6 @@ public class NearbyFragment extends Fragment
                 }
             }).build();
 
-
         Nearby.Messages.subscribe(googleApiClient, messageListener, options);
         Message message = DeviceMessage.newNearbyMessage(preferences.getString(getString(R.string.email), null));
         Nearby.Messages.publish(googleApiClient, message);
@@ -172,6 +176,12 @@ public class NearbyFragment extends Fragment
         Toast.makeText(getActivity(), "You failed", Toast.LENGTH_SHORT).show();
         String stackTrace = Log.getStackTraceString(t);
         Log.wtf("DGL", stackTrace);
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        googleApiClient.stopAutoManage(getActivity());
+        googleApiClient.disconnect();
     }
 }

@@ -89,9 +89,11 @@ public class FlareFragment extends Fragment
 
         googleApiClient.connect();
 
-        flareButton.setEnabled(false);
-
         flareButton.setOnClickListener(v -> {
+            if (location == null) {
+                Toast.makeText(getActivity(), "Still initializing location...", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Gson gson = new GsonBuilder().create();
             Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(FlareModel.ENDPOINT)
@@ -121,37 +123,6 @@ public class FlareFragment extends Fragment
         super.onDestroyView();
     }
 
-    /**
-     * Helper method to request fine location permission.
-     */
-    private void requestFineLocationPermission() {
-        ActivityCompat.requestPermissions(getActivity(),
-            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-            REQUEST_FINE_LOCATION);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_FINE_LOCATION:
-                if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // partay permission granted
-                } else {
-                    Toast.makeText(
-                        getActivity(), "We need location to fire a flare!", Toast.LENGTH_LONG).show();
-
-                    // Try again for permissions
-                    ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_FINE_LOCATION);
-                }
-
-                break;
-        }
-    }
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(
@@ -161,10 +132,8 @@ public class FlareFragment extends Fragment
             Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
 
-            requestFineLocationPermission();
         } else {
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            flareButton.setEnabled(true);
         }
 
     }
@@ -195,8 +164,10 @@ public class FlareFragment extends Fragment
     @Override
     public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
         if (response.isSuccessful()) {
+            Toast.makeText(getActivity(), "Good to go", Toast.LENGTH_SHORT).show();
             // flare fired: partay
         } else {
+            Toast.makeText(getActivity(), response.code() + "", Toast.LENGTH_SHORT).show();
             // flare failed: cry
         }
     }
