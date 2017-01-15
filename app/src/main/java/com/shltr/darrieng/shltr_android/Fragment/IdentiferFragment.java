@@ -107,11 +107,12 @@ public class IdentiferFragment extends Fragment implements Callback<ResponseBody
                 String uploadId = UUID.randomUUID().toString();
 
                 //Creating a multi part request
-                new MultipartUploadRequest(getActivity(), uploadId, UploaderServiceModel.ENDPOINT + "api/uploadProfilePicture")
+                new MultipartUploadRequest(getActivity(), uploadId, UploaderServiceModel.ENDPOINT + "api/uploadProductionPicture")
                     .addFileToUpload(filePath, "image") //Adding file
-                    .addParameter("user_id", preferences.getInt(getString(R.string.id), -1) + " ")
+                    .addParameter("user_id", preferences.getInt(getString(R.string.id), -1) + "")
                     .addHeader("Authorization", "Bearer " + preferences.getString(getString(R.string.token), null))
                     .setNotificationConfig(new UploadNotificationConfig())
+                    .setAutoDeleteFilesAfterSuccessfulUpload(true)
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
 

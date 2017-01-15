@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,6 +28,12 @@ import com.shltr.darrieng.shltr_android.Model.FlareModel;
 import com.shltr.darrieng.shltr_android.Pojo.BaseResponse;
 import com.shltr.darrieng.shltr_android.Pojo.FlarePojo;
 import com.shltr.darrieng.shltr_android.R;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,12 +56,22 @@ public class FlareFragment extends Fragment
      */
     protected GoogleApiClient googleApiClient;
 
+    TimerTask timerTask;
+
     private SharedPreferences preferences;
 
     Location location;
 
     @BindView(R.id.flare_button)
     Button flareButton;
+
+    @BindView(R.id.flare_loader)
+    ProgressBar flareLoader;
+
+    @BindView(R.id.last_fired_flare)
+    TextView lastFiredFlareView;
+
+    Timer timer;
 
     public FlareFragment() {
         // Required empty public constructor
@@ -85,31 +103,54 @@ public class FlareFragment extends Fragment
                 .build();
         }
 
+        if (preferences.getString(getString(R.string.date), null) != null) {
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            Date dateobj = new Date();
+            System.out.println(df.format(dateobj));
+            String text = String.format(getString(R.string.last_fired_flare), df.format(dateobj));
+            lastFiredFlareView.setText(text);
+        }
+
         googleApiClient.connect();
 
         flareButton.setOnClickListener(v -> {
-            if (location == null) {
-                Toast.makeText(getActivity(), "Still initializing location...", Toast.LENGTH_SHORT).show();
-                return;
+            flareButton.setVisibility(View.GONE);
+            flareLoader.setVisibility(View.VISIBLE);
+            if (!activateFlair()) {
+                timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        activateFlair();
+                    }
+                };
+                timer = new Timer();
+                timer.schedule(timerTask, 2500);
             }
-            Gson gson = new GsonBuilder().create();
-            Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(FlareModel.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-            FlareModel fm = retrofit.create(FlareModel.class);
-
-            Call<BaseResponse> call;
-
-            call = fm.createUser("Bearer " + preferences.getString(getString(R.string.token), null),
-                new FlarePojo(location.getLongitude(),
-                    location.getLatitude(),
-                    preferences.getInt(
-                        getString(R.string.id), -1)));
-
-            call.enqueue(this);
         });
+    }
+
+    private boolean activateFlair() {
+        if (location == null) {
+            return false;
+        }
+        Gson gson = new GsonBuilder().create();
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(FlareModel.ENDPOINT)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
+
+        FlareModel fm = retrofit.create(FlareModel.class);
+
+        Call<BaseResponse> call;
+
+        call = fm.createUser("Bearer " + preferences.getString(getString(R.string.token), null),
+            new FlarePojo(location.getLongitude(),
+                location.getLatitude(),
+                preferences.getInt(
+                    getString(R.string.id), -1)));
+
+        call.enqueue(this);
+        return true;
     }
 
     @Override
@@ -162,7 +203,19 @@ public class FlareFragment extends Fragment
     @Override
     public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
         if (response.isSuccessful()) {
-            Toast.makeText(getActivity(), "Good to go", Toast.LENGTH_SHORT).show();
+            flareLoader.setVisibility(View.GONE);
+            flareButton.setVisibility(View.VISIBLE);
+
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            Date dateobj = new Date();
+            System.out.println(df.format(dateobj));
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(getString(R.string.date), df.format(dateobj));
+            String text = String.format(getString(R.string.last_fired_flare), df.format(dateobj));
+            lastFiredFlareView.setText(text);
+            editor.apply();
+
             // flare fired: partay
         } else {
             Toast.makeText(getActivity(), response.code() + "", Toast.LENGTH_SHORT).show();

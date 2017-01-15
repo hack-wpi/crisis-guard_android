@@ -5,16 +5,46 @@
               android:orientation="vertical"
               tools:context="com.shltr.darrieng.shltr_android.Fragment.FlareFragment">
 
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_margin="32dp"
+        android:gravity="top">
 
-    <TextView android:id="@+id/last_fired_flare"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"/>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:gravity="center"
+                      android:orientation="vertical"
+                      android:padding="32dp">
+
+            <TextView
+                android:id="@+id/last_fired_flare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/never_fired"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
     <Button
         android:id="@+id/flare_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/flare_white"
+        android:gravity="center"
         android:text="@string/flare"/>
+
+    <ProgressBar
+        android:id="@+id/flare_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"/>
 
 </LinearLayout>

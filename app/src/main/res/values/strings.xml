@@ -1,10 +1,12 @@
 <resources>
     <!-- Main activity -->
-    <string name="app_name">shltr_android</string>
+    <string name="app_name">Crisis Guard</string>
     <string name="signup">Sign Up</string>
+    <string name="name">Name</string>
     <string name="login">Log In</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="date">date</string>
 
     <!-- data strings -->
     <string name="base">base</string>
@@ -16,7 +18,8 @@
 
     <string name="api_key">AIzaSyAor8CjSJCWnSUhwXn9VcGFe1dIeaI0Wd0</string>
 
-    <string name="never_fired">Flare initializing…</string>
-    <string name="flare_ready">Flare ready!</string>
+    <string name="never_fired">Flare never fired</string>
     <string name="last_fired_flare">Last fired flare at %1$s</string>
+
+    <string name="searching_nearby">Searching for other nearby users</string>
 </resources>

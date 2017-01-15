@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shltr.darrieng.shltr_android.Pojo.UserPojo;
 import com.squareup.picasso.Picasso;
@@ -58,8 +57,8 @@ public class NearbyPersonAdapter extends RecyclerView.Adapter<NearbyPersonAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Picasso.with(context).load(
-            userList.get(position).getPicture()).resize(72, 72).into(holder.profilePic);
+        Picasso.with(context).load("http://hack.symerit.com/images/users/" +
+            userList.get(position).getPicture()).resize(200, 200).into(holder.profilePic);
 
         holder.userNameView.setText(userList.get(position).getName());
     }
@@ -78,7 +77,6 @@ public class NearbyPersonAdapter extends RecyclerView.Adapter<NearbyPersonAdapte
 
         userList.add(newUser);
         notifyItemChanged(userList.size() - 1);
-        Toast.makeText(context, "Adding user", Toast.LENGTH_SHORT).show();
     }
 }
 

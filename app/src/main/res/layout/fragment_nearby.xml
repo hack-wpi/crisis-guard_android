@@ -5,6 +5,26 @@
               android:orientation="vertical"
               tools:context="com.shltr.darrieng.shltr_android.Fragment.NearbyFragment">
 
+    <LinearLayout
+        android:id="@+id/loader_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+    android:orientation="vertical">
+
+        <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content"
+                     android:layout_gravity="center"/>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="@string/searching_nearby"
+                  android:padding="16dp"
+                  android:textSize="20sp"/>
+
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView android:id="@+id/person_list"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>

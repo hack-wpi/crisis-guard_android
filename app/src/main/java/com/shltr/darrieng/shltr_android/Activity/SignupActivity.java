@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shltr.darrieng.shltr_android.Model.PwModel;
+import com.shltr.darrieng.shltr_android.Model.RegisterModel;
 import com.shltr.darrieng.shltr_android.Pojo.PasswordPojo;
+import com.shltr.darrieng.shltr_android.Pojo.RegisterPojo;
 import com.shltr.darrieng.shltr_android.Pojo.UserToken;
 import com.shltr.darrieng.shltr_android.R;
 
@@ -53,7 +56,13 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
 
     @BindView(R.id.go_button)
     FloatingActionButton goButton;
-    
+
+    @BindView(R.id.name_layout)
+    TextInputLayout nameLayout;
+
+    @BindView(R.id.name_view)
+    TextInputEditText nameView;
+
     Boolean isSigningUp;
 
     SharedPreferences preferences;
@@ -110,6 +119,11 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
         buttonView.setVisibility(GONE);
         this.isSigningUp = isSigningUp;
         textScreenView.setVisibility(View.VISIBLE);
+        if (isSigningUp) {
+            nameLayout.setVisibility(View.VISIBLE);
+        } else {
+            nameLayout.setVisibility(GONE);
+        }
     }
 
     private void setUpForChoice() {
@@ -151,7 +165,7 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
             editor.apply();
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Failed to login/register", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to login " + response.code() + " " + response.message(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -162,18 +176,50 @@ public class SignupActivity extends AppCompatActivity implements Callback<UserTo
 
     public void startNetworking() {
         Gson gson = new GsonBuilder().create();
-        Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(PwModel.LOGIN_ENDPOINT)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
+        if (!isSigningUp) {
+            Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(PwModel.LOGIN_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
 
-        PwModel passwordModel = retrofit.create(PwModel.class);
+            PwModel passwordModel = retrofit.create(PwModel.class);
 
-        Call<UserToken> call;
-        PasswordPojo pwpj =
-            new PasswordPojo(enterInputView.getText().toString(), enterPwView.getText().toString());
-        call = passwordModel.loginUser(pwpj);
-        call.enqueue(this);
+            Call<UserToken> call;
+            PasswordPojo pwpj =
+                new PasswordPojo(enterInputView.getText().toString(), enterPwView.getText().toString());
+            call = passwordModel.loginUser(pwpj);
+            call.enqueue(this);
+        } else {
+            Call<Void> call;
+            Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(RegisterModel.LOGIN_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson)).build();
+
+            RegisterModel rm = retrofit.create(RegisterModel.class);
+            call = rm.createUser(
+                new RegisterPojo(
+                    nameView.getText().toString(),
+                    enterInputView.getText().toString(),
+                    enterPwView.getText().toString()));
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(SignupActivity.this, "Successful register, please log in", Toast.LENGTH_SHORT).show();
+                        setUpForInput(false);
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Network error, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+
+                }
+            });
+
+        }
     }
 }
 

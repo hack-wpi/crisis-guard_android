@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,6 +42,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.view.View.GONE;
 import static com.shltr.darrieng.shltr_android.Fragment.FlareFragment.ARG_PAGE;
 
 /**
@@ -61,6 +63,9 @@ public class NearbyFragment extends Fragment
 
     @BindView(R.id.person_list)
     RecyclerView personList;
+
+    @BindView(R.id.loader_view)
+    LinearLayout loaderView;
 
     public NearbyFragment() {
         // Required empty public constructor
@@ -84,7 +89,27 @@ public class NearbyFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         userList = new ArrayList<>();
+
+        preferences = getActivity().getSharedPreferences(
+            getString(R.string.base), Context.MODE_PRIVATE);
+
+        messageListener = new MessageListener() {
+            @Override
+            public void onFound(Message message) {
+                super.onFound(message);
+                startNetworking(message);
+                loaderView.setVisibility(GONE);
+            }
+        };
+
         personAdapter = new NearbyPersonAdapter(getContext(), userList);
+        personList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        personList.setAdapter(personAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Nearby.MESSAGES_API)
@@ -94,20 +119,6 @@ public class NearbyFragment extends Fragment
         }
 
         googleApiClient.connect();
-        preferences = getActivity().getSharedPreferences(
-            getString(R.string.base), Context.MODE_PRIVATE);
-
-        messageListener = new MessageListener() {
-            @Override
-            public void onFound(Message message) {
-                super.onFound(message);
-                Toast.makeText(getActivity(), "found message", Toast.LENGTH_SHORT).show();
-                startNetworking(message);
-            }
-        };
-
-        personList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        personList.setAdapter(personAdapter);
     }
 
     public void startNetworking(Message message) {
@@ -121,7 +132,7 @@ public class NearbyFragment extends Fragment
         UserRetrievalModel uModel = retrofit.create(UserRetrievalModel.class);
 
         Call<UserPojo> call = uModel.retrieveId("Bearer " +
-            preferences.getString(getString(R.string.token), null),
+                preferences.getString(getString(R.string.token), null),
             DeviceMessage.fromNearbyMessage(message).getMessageBody());
 
         call.enqueue(this);
