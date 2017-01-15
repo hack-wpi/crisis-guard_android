@@ -4,6 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+    useLibrary  'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.shltr.darrieng.shltr_android"
         minSdkVersion 21
@@ -40,6 +41,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-nearby:10.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.afollestad:material-camera:0.4.4'
+    compile 'net.gotev:uploadservice:2.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'

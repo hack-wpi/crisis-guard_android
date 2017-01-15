@@ -11,8 +11,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  */
 public class PagerAdapterFragment extends FragmentStatePagerAdapter {
 
-    private String tabTitles[] = new String[] { "Person Identifier" , "Flare", "Nearby"};
-
     Context context;
 
     public PagerAdapterFragment(FragmentManager fm, Context context) {
@@ -37,12 +35,6 @@ public class PagerAdapterFragment extends FragmentStatePagerAdapter {
             default:
                 return FlareFragment.newInstance(position + 1);
         }
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        // Generate title based on item position
-        return tabTitles[position];
     }
 
     

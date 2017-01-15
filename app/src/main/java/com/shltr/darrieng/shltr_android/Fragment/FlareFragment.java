@@ -50,8 +50,6 @@ public class FlareFragment extends Fragment
 
     private SharedPreferences preferences;
 
-    private static final int REQUEST_FINE_LOCATION = 1;
-
     Location location;
 
     @BindView(R.id.flare_button)

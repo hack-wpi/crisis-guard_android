@@ -6,6 +6,10 @@
               tools:context="com.shltr.darrieng.shltr_android.Fragment.FlareFragment">
 
 
+    <TextView android:id="@+id/last_fired_flare"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/flare_button"
         android:layout_width="wrap_content"

@@ -32,6 +32,7 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION};
 
+    private int tabIcons[] = new int[] {R.drawable.identifier, R.drawable.flare_white, R.drawable.nearby_white };
 
     SharedPreferences preferences;
     
@@ -39,6 +40,7 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rescuee);
+        getSupportActionBar().setElevation(0);
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
@@ -73,6 +75,10 @@ public class RescueeActivity extends AppCompatActivity implements Callback<UserI
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        for (int i = 0; i < 3; ++i) {
+            tabLayout.getTabAt(i).setIcon(tabIcons[i]);
+        }
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
